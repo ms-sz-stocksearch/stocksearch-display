@@ -1,0 +1,21 @@
+{
+    "version": "0.1.0",
+    "name": "stocksearch-display",
+    "private": true,
+    "description": "display layer for stocksearch",
+    "keywords": [],
+    "homepage": "https://github.com/ms-sz-stocksearch/stocksearch-display",
+    "author": "LastLeaf <bqfu@163.com> (http://lastleaf.me)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ms-sz-stocksearch/stocksearch-display"
+    },
+    "bugs": {
+        "url": "https://github.com/ms-sz-stocksearch/stocksearch-display/issues"
+    },
+    "dependencies": {
+        "express": "^4.0.0",
+        "socket.io": "^1.0.0"
+    },
+    "license": "MIT"
+}
