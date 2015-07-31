@@ -9,12 +9,34 @@ var app = express();
 var httpd = http.createServer(app);
 io = io(httpd);
 
-app.use(function(req, res){
-    // TODO
-});
+process.chdir(__dirname);
 
+// templates
+var tmpls = {};
+fs.readdirSync('static').forEach(function(file){
+    if(file.slice(-5) !== '.tmpl') return;
+    var tmpl = fs.readFileSync('static/' + file, {encoding: 'utf8'});
+    tmpls[file.slice(0, -5)] = tmpl;
+});
+var tmplsJson = JSON.stringify(tmpls);
+
+// io
+var acceptQueries = ['search', 'status'];
 io.on('connection', function(socket){
-    // TODO
+    acceptQueries.forEach(function(query){
+        socket.on(query, function(data){
+            require( 'io/' + query + '.js' )( data, socket );
+        });
+    });
 });
 
-httpd.listen(2080);
+// serve http static files
+app.use('/~', express.static('./static'));
+app.get('/', function(req, res){
+    res.sendFile('index.html', { root: '.' });
+});
+app.get('/~/tmpls.js', function(req, res){
+    res.send('tmpl=' + tmplsJson);
+});
+
+httpd.listen(8080);

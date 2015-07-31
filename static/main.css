@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+}
+
+#searchbox .searchbox_title {
+    height: 100px;
+}
+
+#searchbox input {
+    display: block;
+    width: 800px;
+    text-align: center;
+    font-size: 20px;
+    padding: 5px;
+    border: 1px solid #808080;
+    margin: 0 auto 30px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+#answer {
+    width: 800px;
+    margin: 20px auto;
+    border: 1px solid #808080;
+    box-sizing: border-box;
+}
+
+#results {
+    width: 800px;
+    margin: 20px auto;
+    border: 1px solid #808080;
+    box-sizing: border-box;
+}
