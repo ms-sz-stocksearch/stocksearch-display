@@ -19,6 +19,10 @@
         var anis = [];
         var curVal = initVal;
 
+        var setVal = function(val){
+            curVal = val;
+        };
+
         var add = function(options){
             var startTime = options.startTime;
             var duration = options.duration || 0;
@@ -46,7 +50,7 @@
             anis.push({
                 startTime: startTime,
                 duration: duration,
-                fromVal: fromVal,
+                fromVal: fromVal || curVal,
                 toVal: toVal,
                 val: val,
                 initProgress: initProgress,
@@ -125,6 +129,7 @@
         };
 
         return {
+            setVal: setVal,
             add: add,
             abort: abort,
             skip: skip,
