@@ -36,7 +36,7 @@ app.get('/', function(req, res){
     res.sendFile('index.html', { root: '.' });
 });
 app.get('/~/tmpls.js', function(req, res){
-    res.send('tmpl=' + tmplsJson);
+    res.send('window.tmpl=' + tmplsJson);
 });
 
 httpd.listen(8080);
