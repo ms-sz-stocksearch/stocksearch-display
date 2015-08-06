@@ -5,6 +5,7 @@
     var contentDiv = document.querySelector('#content');
     var answerDiv = document.querySelector('#answer');
     var resultsDiv = document.querySelector('#results');
+    var sidebarDiv = document.querySelector('#sidebar');
     var searchBox = document.querySelector('#searchbox');
     var searchBoxTitle = document.querySelector('#searchbox .searchbox_title');
     var inputBox = document.querySelector('.searchbox_input input');
@@ -99,32 +100,81 @@
     // answer and results animation
     var resultsAni = scade.createSubject(0, function(val){
         answerDiv.style.opacity = val / 0.8;
+        sidebarDiv.style.opacity = (val - 0.1) / 0.8;
         resultsDiv.style.opacity = (val - 0.2) / 0.8;
     });
 
-    // TODO send query
-    var curQuery = 0;
+    // send query
+    var socket = window.io.connect('http://' + location.host, {path: '/~/socket'});
+    var curQuery = {
+        qid: 0,
+        answer: null,
+        results: null,
+        sidebar: null
+    };
     var sendQuery = function(){
-        var q = new Date().getTime();
-        curQuery = q;
+        var q = String(new Date().getTime() + Math.random());
+        curQuery.qid = q;
+        curQuery.answer = null;
+        curQuery.results = null;
+        curQuery.sidebar = null;
         answerDiv.style.display = 'none';
         resultsDiv.style.display = 'none';
+        sidebarDiv.style.display = 'none';
         showLoading();
-        setTimeout(function(){
-            if(curQuery !== q) return;
-            hideLoading();
-            resultsAni.setVal(0);
-            answerDiv.innerHTML = window.tmpl.answer;
-            resultsDiv.innerHTML = window.tmpl.results;
-            answerDiv.style.display = 'block';
-            resultsDiv.style.display = 'block';
-            resultsAni.add({
-                startTime: scade.getTime(),
-                toVal: 1,
-                duration: 500,
-                timing: scade.timing.linear()
-            });
-        }, 3000);
+        socket.emit('answer', {
+            qid: q,
+            query: inputBox.value
+        });
+        socket.emit('results', {
+            qid: q,
+            query: inputBox.value
+        });
+        socket.emit('sidebar', {
+            qid: q,
+            query: inputBox.value
+        });
+    };
+    socket.on('answer', function(res){
+        if(curQuery.qid !== res.qid) return;
+        curQuery.answer = res.data;
+        receiveQuery();
+    });
+    socket.on('results', function(res){
+        if(curQuery.qid !== res.qid) return;
+        curQuery.results = res.data;
+        receiveQuery();
+    });
+    socket.on('sidebar', function(res){
+        if(curQuery.qid !== res.qid) return;
+        curQuery.sidebar = res.data;
+        receiveQuery();
+    });
+    var receiveQuery = function(){
+        if(!curQuery.answer || !curQuery.results || !curQuery.sidebar) return;
+        hideLoading();
+        resultsAni.setVal(0);
+        updateResultsDiv(curQuery);
+        answerDiv.style.display = 'block';
+        resultsDiv.style.display = 'block';
+        sidebarDiv.style.display = 'block';
+        resultsAni.add({
+            startTime: scade.getTime(),
+            toVal: 1,
+            duration: 500,
+            timing: scade.timing.linear()
+        });
+    };
+
+    // templating
+    var handlebars = window.Handlebars;
+    var answerTmpl = handlebars.compile(window.tmpl.answer);
+    var resultsTmpl = handlebars.compile(window.tmpl.results);
+    var sidebarTmpl = handlebars.compile(window.tmpl.sidebar);
+    var updateResultsDiv = function(res){
+        answerDiv.innerHTML = answerTmpl(res.answer);
+        resultsDiv.innerHTML = resultsTmpl(res.results);
+        sidebarDiv.innerHTML = sidebarTmpl(res.sidebar);
     };
 
 })();

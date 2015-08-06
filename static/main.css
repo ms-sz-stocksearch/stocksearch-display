@@ -14,7 +14,6 @@ body {
     height: 400px;
     z-index: 100;
 }
-
 #searchbox .searchbox_title {
     background: #e8e8e8;
     border-bottom: 1px solid #808080;
@@ -24,7 +23,6 @@ body {
     right: 0;
     position: absolute;
 }
-
 #searchbox .searchbox_title h1 {
     text-align: center;
     margin: 0;
@@ -36,19 +34,17 @@ body {
     right: 0;
     bottom: 40px;
 }
-
 #searchbox .searchbox_input {
     bottom: 20px;
-    width: 800px;
+    width: 1000px;
     left: 0;
     right: 0;
     margin: auto;
     position: absolute;
 }
-
 #searchbox .searchbox_input input {
     display: block;
-    width: 800px;
+    width: 1000px;
     text-align: center;
     font-size: 20px;
     height: 40px;
@@ -79,13 +75,21 @@ body {
     background: #808080;
 }
 
+#content {
+    width: 1000px;
+    margin: 80px auto 0;
+}
 #answer, #results {
-    width: 800px;
-    margin: 20px auto;
+    width: 760px;
+    margin: 20px 0;
     border: 1px solid #808080;
     box-sizing: border-box;
     display: none;
 }
-#answer {
-    margin-top: 80px;
+#sidebar {
+    float: right;
+    width: 220px;
+    border: 1px solid #808080;
+    box-sizing: border-box;
+    display: none;
 }

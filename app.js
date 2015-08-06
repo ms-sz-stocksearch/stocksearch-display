@@ -4,10 +4,11 @@ var http = require('http');
 var express = require('express');
 var io = require('socket.io');
 var fs = require('fs');
+var path = require('path');
 
 var app = express();
 var httpd = http.createServer(app);
-io = io(httpd);
+io = io(httpd, {path: '/~/socket'});
 
 process.chdir(__dirname);
 
@@ -21,11 +22,16 @@ fs.readdirSync('static').forEach(function(file){
 var tmplsJson = JSON.stringify(tmpls);
 
 // io
-var acceptQueries = ['search', 'status'];
+var acceptQueries = ['answer', 'results', 'sidebar'];
 io.on('connection', function(socket){
     acceptQueries.forEach(function(query){
         socket.on(query, function(data){
-            require( 'io/' + query + '.js' )( data, socket );
+            require( './io/' + query + '.js' )(data.query, function(res){
+                io.emit(query, {
+                    qid: data.qid,
+                    data: res
+                });
+            });
         });
     });
 });
