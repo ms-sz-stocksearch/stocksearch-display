@@ -9,12 +9,13 @@
     var searchBox = document.querySelector('#searchbox');
     var searchBoxTitle = document.querySelector('#searchbox .searchbox_title');
     var inputBox = document.querySelector('.searchbox_input input');
-    inputBox.focus();
 
     // input box animation
     var scade = window.scade;
-    var inputBoxAni = scade.createSubject(400, function(val){
-        searchBox.style.height = val + 'px';
+    var inputBoxAni = scade.createSubject(1, function(val){
+        var h = document.documentElement.clientHeight / 2;
+        searchBox.style.height = (val*(h-80)+80) + 'px';
+        inputBox.style.width = (val*240+760) + 'px';
     });
     var searchBoxTitleAni = scade.createSubject(1, function(val){
         searchBoxTitle.style.opacity = val;
@@ -25,8 +26,8 @@
         hideLoading();
         inputBoxAni.add({
             startTime: ts,
-            fromVal: 80,
-            toVal: 400,
+            fromVal: 0,
+            toVal: 1,
             duration: 300,
             timing: scade.timing.cubicBezier(0.8, 0.2, 0.2, 0.8)
         });
@@ -42,28 +43,38 @@
             }
         });
     };
-    var showResultPage = function(){
+    var showResultPage = function(duration){
         var ts = scade.getTime();
         inputBoxAni.add({
             startTime: ts,
-            fromVal: 400,
-            toVal: 80,
-            duration: 300,
+            fromVal: 1,
+            toVal: 0,
+            duration: duration || 300,
             timing: scade.timing.cubicBezier(0.8, 0.2, 0.2, 0.8)
         });
         searchBoxTitleAni.add({
             startTime: ts,
             fromVal: 1,
             toVal: 0,
-            duration: 300,
+            duration: duration || 300,
             timing: scade.timing.cubicBezier(0.8, 0.2, 1, 1)
         });
         showLoading();
         sendQuery();
     };
-    inputBox.onkeyup = function(){
-        if(inputBox.value) showResultPage();
-        else showHomePage();
+    var applyHashChange = function(){
+        location.hash = '#' + inputBox.value;
+    };
+    var inputEventTobj = null;
+    inputBox.onkeyup = function(e){
+        if(inputEventTobj) clearTimeout(inputEventTobj);
+        inputEventTobj = null;
+        if(inputBox.value === curHash.slice(1)) return;
+        if(e.keyCode === 13) {
+            applyHashChange();
+        } else {
+            inputEventTobj = setTimeout(applyHashChange, 500);
+        }
     };
 
     // loading animation
@@ -79,15 +90,14 @@
     var showLoading = function(){
         loadingDiv.style.display = 'block';
         var aniLoop = function(){
-            loadingAni.setVal(0);
             loadingAni.add({
                 startTime: scade.getTime(),
+                toVal: 0
+            });
+            loadingAni.add({
                 toVal: 1,
                 duration: 1000,
-                timing: scade.timing.linear(),
-                end: function(){
-                    setTimeout(aniLoop, 0);
-                }
+                end: aniLoop
             });
         };
         aniLoop();
@@ -176,5 +186,19 @@
         resultsDiv.innerHTML = resultsTmpl(res.results);
         sidebarDiv.innerHTML = sidebarTmpl(res.sidebar);
     };
+
+    // hash detection
+    var curHash = location.hash;
+    window.onhashchange = function(e){
+        e.preventDefault();
+        if(curHash === location.hash) return;
+        curHash = location.hash;
+        if(curHash.slice(1)) showResultPage();
+        else showHomePage();
+    };
+    inputBox.value = curHash.slice(1);
+    inputBox.select();
+    inputBox.focus();
+    if(inputBox.value) showResultPage(1);
 
 })();

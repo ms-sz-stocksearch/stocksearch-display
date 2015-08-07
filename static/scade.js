@@ -20,6 +20,7 @@
         var curVal = initVal;
 
         var setVal = function(val){
+            abort();
             curVal = val;
         };
 
@@ -28,8 +29,9 @@
             var duration = options.duration || 0;
             var fromVal = options.fromVal;
             var toVal = ( options.toVal === undefined ? initVal : options.toVal );
-            var val = (options.timing && options.timing.val) || function(){};
-            var initProgress = (options.timing && options.timing.progress);
+            var timing = options.timing || timing.linear();
+            var val = timing.val;
+            var initProgress = timing.progress;
             var oncancel = options.cancel || function(){};
             var onstart = options.start || function(){};
             var onabort = options.abort || function(){};
@@ -41,8 +43,9 @@
                 } else {
                     startTime = getTime();
                 }
+            } else {
+                abort(startTime);
             }
-            abort(startTime);
             if(fromVal !== undefined) {
                 startTime -= duration * initProgress(curVal, fromVal, toVal);
             }
@@ -50,7 +53,7 @@
             anis.push({
                 startTime: startTime,
                 duration: duration,
-                fromVal: fromVal || curVal,
+                fromVal: fromVal || undefined,
                 toVal: toVal,
                 val: val,
                 initProgress: initProgress,
@@ -99,6 +102,7 @@
                     continue;
                 }
                 if(!ani.started) {
+                    if(ani.fromVal === undefined) ani.fromVal = curVal;
                     ani.started = true;
                     ani.start();
                 }
