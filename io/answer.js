@@ -4,9 +4,9 @@ var http = require('http');
 var iconv = require('iconv-lite');
 
 module.exports = function(query, cb){
-    var stockId = 'sh601006';
+    var stockId = query;
     var req = http.get('http://hq.sinajs.cn/list=' + stockId, function(res){
-        if(res.statusCode >= 300) return cb(null);
+        if(res.statusCode >= 300) return cb({});
         var iconvStream = iconv.decodeStream('gbk');
         res.pipe(iconvStream);
         var text = '';
@@ -15,6 +15,7 @@ module.exports = function(query, cb){
         });
         iconvStream.on('end', function(){
             var slices = text.slice( text.indexOf('=')+2, -2 ).split(',');
+            if(slices.length < 12) return cb({});
             cb({
                 pic: 'http://image.sinajs.cn/newchart/daily/n/' + stockId + '.gif',
                 number: stockId.slice(2),
@@ -32,6 +33,6 @@ module.exports = function(query, cb){
         });
     });
     req.on('error', function(){
-        cb(null);
+        cb({});
     });
 };

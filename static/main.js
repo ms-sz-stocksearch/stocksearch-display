@@ -72,6 +72,7 @@
         sendQuery();
     };
     var applyHashChange = function(){
+        inputEventTobj = null;
         location.hash = '#' + inputBox.value;
     };
     var inputEventTobj = null;
@@ -124,7 +125,7 @@
         var sqrtVal = Math.sqrt(val / 0.6);
         if(sqrtVal > 1) sqrtVal = 1;
         answerBgDiv.style.opacity = sqrtVal;
-        answerBgDiv.style.height = (360 + sqrtVal*50) + 'px';
+        answerBgDiv.style.height = (320 + sqrtVal*80) + 'px';
     });
 
     // send query
@@ -170,11 +171,11 @@
     socket.on('answer', function(res){
         if(curQuery.qid !== res.qid) return;
         curQuery.answer = res.data;
-        if(!res.data) {
+        if(!res.data.number) {
             receiveQuery();
         } else {
             var img = new Image();
-            img.onload = function(){
+            img.onload = img.onerror = function(){
                 curQuery.answer.img = img;
                 receiveQuery();
             };
@@ -196,14 +197,17 @@
         hideLoading();
         resultsAni.setVal(0);
         updateResultsDiv(curQuery);
+        searchHistoryTiming(inputBox.value);
         resultsAni.add({
             startTime: scade.getTime(),
             toVal: 1,
             duration: 500,
             timing: scade.timing.linear(),
             start: function(){
-                answerDiv.style.display = 'block';
-                answerBgDiv.style.display = 'block';
+                if(curQuery.answer.number) {
+                    answerDiv.style.display = 'block';
+                    answerBgDiv.style.display = 'block';
+                }
                 resultsDiv.style.display = 'block';
                 sidebarDiv.style.display = 'block';
             }
@@ -216,10 +220,15 @@
     var resultsTmpl = handlebars.compile(window.tmpl.results);
     var sidebarTmpl = handlebars.compile(window.tmpl.sidebar);
     var updateResultsDiv = function(res){
-        answerDiv.innerHTML = answerTmpl(res.answer);
-        document.querySelector('#answer .answer_image').appendChild(res.answer.img);
+        if(res.answer.number) {
+            answerDiv.innerHTML = answerTmpl(res.answer);
+            document.querySelector('#answer .answer_image').appendChild(res.answer.img);
+        } else {
+            answerDiv.innerHTML = '';
+        }
         resultsDiv.innerHTML = resultsTmpl(res.results);
         sidebarDiv.innerHTML = sidebarTmpl(res.sidebar);
+        searchHistoryInit();
     };
 
     // hash detection
@@ -230,10 +239,66 @@
         curHash = location.hash;
         if(curHash.slice(1)) showResultPage();
         else showHomePage();
+        searchHistoryTiming();
     };
     inputBox.value = curHash.slice(1);
     inputBox.select();
     inputBox.focus();
     if(inputBox.value) showResultPage(1);
+
+    // search history
+    var historyDiv = null;
+    var searchHistoryLoad = function(){
+        var str = localStorage['stocksearch-history'];
+        if(!str) return [];
+        return JSON.parse(str);
+    };
+    var searchHistorySave = function(query){
+        query = query.replace(/(^\s+|\s+$)/, '');
+        var arr = searchHistoryLoad();
+        for(var i=0; i<arr.length; i++){
+            if(arr[i] === query) {
+                arr.splice(i, 1);
+                break;
+            }
+        }
+        arr.unshift(query);
+        if(arr.length > 10) arr.pop();
+        localStorage['stocksearch-history'] = JSON.stringify(arr);
+    };
+    var searchHistoryAdd = function(query){
+        query = query.replace(/(^\s+|\s+$)/, '');
+        var item = document.createElement('div');
+        item.setAttribute('class', 'sidebar_history_item');
+        item.innerHTML = '<a href="#">' + document.createTextNode(query).nodeValue + '</a>';
+        item.onclick = function(e){
+            e.preventDefault();
+            if(inputEventTobj) clearTimeout(inputEventTobj);
+            inputBox.value = query;
+            location.hash = '#' + encodeURIComponent(query);
+        };
+        if(historyDiv.childNodes.length > 1) {
+            historyDiv.insertBefore( item, historyDiv.childNodes[1] );
+        } else {
+            historyDiv.appendChild( item );
+        }
+    };
+    var searchHistoryInit = function(){
+        historyDiv = document.querySelector('#sidebar .sidebar_history');
+        var arr = searchHistoryLoad();
+        for(var i=arr.length-1; i>=0; i--) searchHistoryAdd(arr[i]);
+    };
+    var searchHistoryTobj = null;
+    var searchHistoryTiming = function(query){
+        if(searchHistoryTobj) clearTimeout(searchHistoryTobj);
+        if(!query) {
+            searchHistoryTobj = null;
+        } else {
+            searchHistoryTobj = setTimeout(function(){
+                searchHistoryTobj = null;
+                searchHistorySave(query);
+            }, 5000);
+        }
+    };
 
 })();
