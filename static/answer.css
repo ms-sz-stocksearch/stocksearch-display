@@ -1,14 +1,36 @@
 #answer {
-    padding: 10px;
-    height: 240px;
+    padding: 20px 5px;
+    font-size: 14px;
+    color: #444;
 }
-#answer .answer_img {
+#answer .answer_image {
     display: block;
     float: left;
-    width: 500px;
+    width: 545px;
+    height: 300px;
+}
+#answer .answer_image img {
+    width: 545px;
+    height: 300px;
 }
 #answer .answer_data {
-    padding-left: 20px;
-    width: 230px;
-    height: 220px;
+    margin-left: 555px;
+    height: 300px;
+    width: 190px;
+}
+#answer th {
+    text-align: left;
+    font-size: 16px;
+}
+
+#answer_bg {
+    position: absolute;
+    z-index: -1000;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 410px;
+    background: #eee;
+    border-bottom: 1px solid #b0b0b0;
+    display: none;
 }

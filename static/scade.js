@@ -29,9 +29,9 @@
             var duration = options.duration || 0;
             var fromVal = options.fromVal;
             var toVal = ( options.toVal === undefined ? initVal : options.toVal );
-            var timing = options.timing || timing.linear();
-            var val = timing.val;
-            var initProgress = timing.progress;
+            var timingFunc = options.timing || timing.linear();
+            var val = timingFunc.val;
+            var initProgress = timingFunc.progress;
             var oncancel = options.cancel || function(){};
             var onstart = options.start || function(){};
             var onabort = options.abort || function(){};

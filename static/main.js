@@ -4,6 +4,7 @@
     var loadingDiv = document.querySelector('#loading');
     var contentDiv = document.querySelector('#content');
     var answerDiv = document.querySelector('#answer');
+    var answerBgDiv = document.querySelector('#answer_bg');
     var resultsDiv = document.querySelector('#results');
     var sidebarDiv = document.querySelector('#sidebar');
     var searchBox = document.querySelector('#searchbox');
@@ -13,7 +14,7 @@
     // input box animation
     var scade = window.scade;
     var inputBoxAni = scade.createSubject(1, function(val){
-        var h = document.documentElement.clientHeight / 2;
+        var h = document.documentElement.clientHeight * 0.6;
         searchBox.style.height = (val*(h-80)+80) + 'px';
         inputBox.style.width = (val*240+760) + 'px';
     });
@@ -36,10 +37,18 @@
             fromVal: 0,
             toVal: 1,
             duration: 300,
-            timing: scade.timing.cubicBezier(0.2, 0.8, 0, 0),
+            timing: scade.timing.cubicBezier(0.2, 0.8, 0, 0)
+        });
+        resultsAni.add({
+            startTime: ts,
+            fromVal: 1,
+            toVal: 0,
+            duration: 300,
             end: function(){
                 answerDiv.style.display = 'none';
+                answerBgDiv.style.display = 'none';
                 resultsDiv.style.display = 'none';
+                sidebarDiv.style.display = 'none';
             }
         });
     };
@@ -112,6 +121,10 @@
         answerDiv.style.opacity = val / 0.8;
         sidebarDiv.style.opacity = (val - 0.1) / 0.8;
         resultsDiv.style.opacity = (val - 0.2) / 0.8;
+        var sqrtVal = Math.sqrt(val / 0.6);
+        if(sqrtVal > 1) sqrtVal = 1;
+        answerBgDiv.style.opacity = sqrtVal;
+        answerBgDiv.style.height = (360 + sqrtVal*50) + 'px';
     });
 
     // send query
@@ -128,10 +141,19 @@
         curQuery.answer = null;
         curQuery.results = null;
         curQuery.sidebar = null;
-        answerDiv.style.display = 'none';
-        resultsDiv.style.display = 'none';
-        sidebarDiv.style.display = 'none';
-        showLoading();
+        resultsAni.add({
+            startTime: scade.getTime(),
+            fromVal: 1,
+            toVal: 0,
+            duration: 300,
+            end: function(){
+                answerDiv.style.display = 'none';
+                answerBgDiv.style.display = 'none';
+                resultsDiv.style.display = 'none';
+                sidebarDiv.style.display = 'none';
+                showLoading();
+            }
+        });
         socket.emit('answer', {
             qid: q,
             query: inputBox.value
@@ -148,7 +170,16 @@
     socket.on('answer', function(res){
         if(curQuery.qid !== res.qid) return;
         curQuery.answer = res.data;
-        receiveQuery();
+        if(!res.data) {
+            receiveQuery();
+        } else {
+            var img = new Image();
+            img.onload = function(){
+                curQuery.answer.img = img;
+                receiveQuery();
+            };
+            img.src = res.data.pic + '?t=' + res.qid;
+        }
     });
     socket.on('results', function(res){
         if(curQuery.qid !== res.qid) return;
@@ -165,14 +196,17 @@
         hideLoading();
         resultsAni.setVal(0);
         updateResultsDiv(curQuery);
-        answerDiv.style.display = 'block';
-        resultsDiv.style.display = 'block';
-        sidebarDiv.style.display = 'block';
         resultsAni.add({
             startTime: scade.getTime(),
             toVal: 1,
             duration: 500,
-            timing: scade.timing.linear()
+            timing: scade.timing.linear(),
+            start: function(){
+                answerDiv.style.display = 'block';
+                answerBgDiv.style.display = 'block';
+                resultsDiv.style.display = 'block';
+                sidebarDiv.style.display = 'block';
+            }
         });
     };
 
@@ -183,6 +217,7 @@
     var sidebarTmpl = handlebars.compile(window.tmpl.sidebar);
     var updateResultsDiv = function(res){
         answerDiv.innerHTML = answerTmpl(res.answer);
+        document.querySelector('#answer .answer_image').appendChild(res.answer.img);
         resultsDiv.innerHTML = resultsTmpl(res.results);
         sidebarDiv.innerHTML = sidebarTmpl(res.sidebar);
     };

@@ -1,10 +1,16 @@
-<img class="answer_img" src="/~/image.png" alt="stock of MS" />
+<div class="answer_image"></div>
 <table class="answer_data" cellspacing="0" cellpadding="0" width="0">
-    <tr><td>今开</td><td>46.98</td></tr>
-    <tr><td>昨收</td><td>46.70</td></tr>
-    <tr><td>最高</td><td>47.00</td></tr>
-    <tr><td>最低</td><td>46.45</td></tr>
-    <tr><td>成交量</td><td>2386.89万</td></tr>
-    <tr><td>市盈率</td><td>31.63</td></tr>
-    <tr><td>市值</td><td>3758.84亿</td></tr>
+    <thead>
+        <tr><th>{{number}}</th><th>{{name}}</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>今开</td><td>{{open}}</td></tr>
+        <tr><td>昨收</td><td>{{closed}}</td></tr>
+        <tr><td>当前</td><td>{{current}}</td></tr>
+        <tr><td>最高</td><td>{{max}}</td></tr>
+        <tr><td>最低</td><td>{{min}}</td></tr>
+        <tr><td>成交量</td><td>{{hands}} 百股</td></tr>
+        <tr><td>成交金额</td><td>{{turnover}} 万元</td></tr>
+    </tbody>
+    <tfoot></tfoot>
 </table>

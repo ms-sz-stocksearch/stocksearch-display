@@ -1,15 +1,15 @@
 #results .results_item {
-    margin: 10px;
+    margin: 20px 0;
 }
-#results .a{
-    font-size:18px;
-    color:blue;
+#results .results_title a {
+    font-size: 18px;
+    color: #04b;
 }
-#results .p{
-    font-size:14px;
+#results .results_abstract{
+    margin-top: 2px;
+    font-size: 14px;
 }
-#results .span{
-    font-size:18px;
-    font-weight:bold;
-    color:#ff0000;
+#results .results_match {
+    font-size: 18px;
+    font-weight: bold;
 }

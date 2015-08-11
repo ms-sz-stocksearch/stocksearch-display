@@ -7,11 +7,11 @@ body {
 }
 
 #searchbox {
-    position: fixed;
+    position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    height: 50%;
+    height: 60%;
     z-index: 100;
 }
 #searchbox .searchbox_title {
@@ -76,12 +76,11 @@ body {
 
 #content {
     width: 1000px;
-    margin: 80px auto 0;
+    margin: 70px auto 0;
 }
 #answer, #results {
     width: 760px;
-    margin: 20px 0;
-    border: 1px solid #808080;
+    margin: 30px 0;
     box-sizing: border-box;
     display: none;
 }
