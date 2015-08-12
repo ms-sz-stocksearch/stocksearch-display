@@ -4,7 +4,7 @@ var http = require('http');
 var iconv = require('iconv-lite');
 
 module.exports = function(query, cb){
-    var stockId = query;
+    var stockId = 'sh' + query;
     var req = http.get('http://hq.sinajs.cn/list=' + stockId, function(res){
         if(res.statusCode >= 300) return cb({});
         var iconvStream = iconv.decodeStream('gbk');

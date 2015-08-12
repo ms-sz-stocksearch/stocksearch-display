@@ -22,15 +22,34 @@ fs.readdirSync('static').forEach(function(file){
 var tmplsJson = JSON.stringify(tmpls);
 
 // io
-var acceptQueries = ['answer', 'results', 'sidebar'];
 io.on('connection', function(socket){
-    acceptQueries.forEach(function(query){
-        socket.on(query, function(data){
-            require( './io/' + query + '.js' )(data.query, function(res){
-                io.emit(query, {
-                    qid: data.qid,
-                    data: res
+    socket.on('search', function(data){
+        // results
+        require( './io/results.js' )(data.query, function(res){
+            io.emit('results', {
+                qid: data.qid,
+                data: res
+            });
+            // answer
+            if(res.stock_code || 1) {
+                require( './io/answer.js' )(res.stock_code || data.query, function(res){
+                    io.emit('answer', {
+                        qid: data.qid,
+                        data: res
+                    });
                 });
+            } else {
+                io.emit('answer', {
+                    qid: data.qid,
+                    data: {}
+                });
+            }
+        });
+        // sidebar
+        require( './io/sidebar.js' )(data.query, function(res){
+            io.emit('sidebar', {
+                qid: data.qid,
+                data: res
             });
         });
     });

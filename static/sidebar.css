@@ -4,6 +4,9 @@
 }
 #sidebar .sidebar_history_item {
     margin-top: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #sidebar .sidebar_history_item a {
     text-decoration: none;
