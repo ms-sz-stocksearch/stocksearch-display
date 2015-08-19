@@ -239,7 +239,7 @@
             var splits = [0];
             var curStart = ranges[0][0];
             var curEnd = ranges[0][1];
-            for(var i=1; i<ranges.length; i++) {
+            for(i=1; i<ranges.length; i++) {
                 var range = ranges[i];
                 if(range[0] > curEnd) {
                     splits.push(curStart, curEnd);
@@ -252,7 +252,7 @@
             splits.push(curStart, curEnd);
             // apply ranges
             var slices = [ text.slice(splits[0], splits[1]) ];
-            for(var i=1; i<splits.length; i+=2) {
+            for(i=1; i<splits.length; i+=2) {
                 slices.push(
                     '<span class="results_match">',
                     text.slice(splits[i], splits[i+1]),
@@ -264,8 +264,8 @@
         };
         var items = res.results.result || [];
         for(var i=0; i<items.length; i++) {
-            var title = items[i].title.replace(/\<.*?\>/g, '');
-            var abstract = items[i].summary.replace(/\<.*?\>/g, '');
+            var title = items[i].title.replace(/<.*?>/g, '');
+            var abstract = items[i].summary.replace(/<.*?>/g, '');
             items[i] = {
                 title: highlight(title),
                 abstract: highlight(abstract),
@@ -286,7 +286,7 @@
         e.preventDefault();
         if(curHash === location.hash) return;
         curHash = location.hash;
-        if(!inputBox !== document.activeElement) inputBox.value = curHash.slice(1);
+        if(inputBox !== document.activeElement) inputBox.value = curHash.slice(1);
         if(curHash.slice(1)) showResultPage();
         else showHomePage();
         searchHistoryTiming();
