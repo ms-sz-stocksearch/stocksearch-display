@@ -31,7 +31,7 @@ io.on('connection', function(socket){
                 data: res
             });
             // answer
-            if(res.stock_code || 1) {
+            if(res.stock_code || data.query.match(/^[0-9]{6}$/)) {
                 require( './io/answer.js' )(res.stock_code || data.query, function(res){
                     io.emit('answer', {
                         qid: data.qid,

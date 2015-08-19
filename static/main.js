@@ -263,7 +263,7 @@
             return slices.join('');
         };
         var items = res.results.result || [];
-      for(var i=0; i<items.length; i++) {
+        for(var i=0; i<items.length; i++) {
             var title = items[i].title.replace(/\<.*?\>/g, '');
             var abstract = items[i].summary.replace(/\<.*?\>/g, '');
             items[i] = {
@@ -272,7 +272,9 @@
                 url: items[i].url
             };
         }
-        resultsDiv.innerHTML = resultsTmpl(items);
+        resultsDiv.innerHTML = resultsTmpl({
+            results: ( items.length ? items : null )
+        });
         // sidebar
         sidebarDiv.innerHTML = sidebarTmpl(res.sidebar);
         searchHistoryInit();
@@ -284,6 +286,7 @@
         e.preventDefault();
         if(curHash === location.hash) return;
         curHash = location.hash;
+        if(!inputBox !== document.activeElement) inputBox.value = curHash.slice(1);
         if(curHash.slice(1)) showResultPage();
         else showHomePage();
         searchHistoryTiming();

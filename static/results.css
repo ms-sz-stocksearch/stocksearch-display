@@ -15,3 +15,9 @@
 #results .results_match {
     font-weight: bold;
 }
+#results .results_none {
+    padding: 20px 0;
+}
+#results .results_none a {
+    color: #04b;
+}

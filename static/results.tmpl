@@ -1,6 +1,11 @@
-{{#each this}}<div class="results_item">
+{{#if results}}{{#each results}}<div class="results_item">
     <div class="results_title">
         <a href="{{url}}">{{{title}}}</a>
     </div>
     <div class="results_abstract">{{{abstract}}}</div>
-</div>{{/each}}
+</div>{{/each}}{{else}}
+	<div class="results_none">
+        <p>对不起，没有找到相关的评述 X_X</p>
+        <p>试试这些？ <a href="#000001">上证指数</a> <a href="#000300">沪深300</a></p>
+	</div>
+{{/if}}
