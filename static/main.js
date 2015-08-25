@@ -10,6 +10,7 @@
     var searchBox = document.querySelector('#searchbox');
     var searchBoxTitle = document.querySelector('#searchbox .searchbox_title');
     var inputBox = document.querySelector('.searchbox_input input');
+	var inputBoxImg = document.querySelector('.searchbox_input img');
 
     // input box animation
     var scade = window.scade;
@@ -17,7 +18,8 @@
         var h = document.documentElement.clientHeight * 0.6;
         searchBox.style.height = (val*(h-80)+80) + 'px';
         inputBox.style.width = (val*240+760) + 'px';
-    });
+		inputBoxImg.style.opacity = 1-val;
+	});
     var searchBoxTitleAni = scade.createSubject(1, function(val){
         searchBoxTitle.style.opacity = val;
         contentDiv.style.opacity = 1-val;
@@ -187,7 +189,6 @@
     var receiveQuery = function(){
         if(!curQuery.answer || !curQuery.results || !curQuery.sidebar) return;
         hideLoading();
-        resultsAni.setVal(0);
         updateResultsDiv(curQuery);
         searchHistoryTiming(inputBox.value);
         resultsAni.add({
@@ -276,7 +277,9 @@
             results: ( items.length ? items : null )
         });
         // sidebar
-        sidebarDiv.innerHTML = sidebarTmpl(res.sidebar);
+        sidebarDiv.innerHTML = sidebarTmpl({
+			answer: res.answer.number
+		});
         searchHistoryInit();
     };
 
