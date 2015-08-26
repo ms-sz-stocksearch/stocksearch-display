@@ -3,8 +3,7 @@
 var http = require('http');
 var iconv = require('iconv-lite');
 
-module.exports = function(query, cb){
-    var stockId = 'sh' + query;
+var getSina = function(stockId, cb){
     var req = http.get('http://hq.sinajs.cn/list=' + stockId, function(res){
         if(res.statusCode >= 300) return cb({});
         var iconvStream = iconv.decodeStream('gbk');
@@ -35,4 +34,14 @@ module.exports = function(query, cb){
     req.on('error', function(){
         cb({});
     });
+};
+
+module.exports = function(query, cb){
+	getSina('sh'+query, function(res){
+		if(!res.number) {
+			getSina('sz'+query, cb);
+		} else {
+			cb(res);
+		}
+	});
 };

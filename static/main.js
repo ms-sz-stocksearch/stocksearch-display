@@ -45,13 +45,19 @@
             startTime: ts,
             fromVal: 1,
             toVal: 0,
-            duration: 300,
-            end: function(){
-                answerDiv.style.display = 'none';
-                answerBgDiv.style.display = 'none';
-                resultsDiv.style.display = 'none';
-                sidebarDiv.style.display = 'none';
-            }
+			duration: 300,
+			abort: function(){
+				answerDiv.style.display = 'none';
+				answerBgDiv.style.display = 'none';
+				resultsDiv.style.display = 'none';
+				sidebarDiv.style.display = 'none';
+			},
+			end: function(){
+				answerDiv.style.display = 'none';
+				answerBgDiv.style.display = 'none';
+				resultsDiv.style.display = 'none';
+				sidebarDiv.style.display = 'none';
+			}
         });
     };
     var showResultPage = function(duration){
@@ -144,17 +150,23 @@
         curQuery.answer = null;
         curQuery.results = null;
         curQuery.sidebar = null;
-        resultsAni.add({
+		showLoading();
+		resultsAni.add({
             startTime: scade.getTime(),
             fromVal: 1,
             toVal: 0,
             duration: 300,
-            end: function(){
+			abort: function(){
+				answerDiv.style.display = 'none';
+				answerBgDiv.style.display = 'none';
+				resultsDiv.style.display = 'none';
+				sidebarDiv.style.display = 'none';
+			},
+			end: function(){
                 answerDiv.style.display = 'none';
                 answerBgDiv.style.display = 'none';
                 resultsDiv.style.display = 'none';
                 sidebarDiv.style.display = 'none';
-                showLoading();
             }
         });
         socket.emit('search', {
@@ -289,7 +301,7 @@
         e.preventDefault();
         if(curHash === location.hash) return;
         curHash = location.hash;
-        if(inputBox !== document.activeElement) inputBox.value = curHash.slice(1);
+        if(inputBox !== document.activeElement) inputBox.value = decodeURIComponent(curHash.slice(1));
         if(curHash.slice(1)) showResultPage();
         else showHomePage();
         searchHistoryTiming();
